@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   
   future: {
-    compatibilityVersion: 3, // Use Nuxt 3 structure (not app directory)
+    compatibilityVersion: 4,
   },
   
   devServer: {
