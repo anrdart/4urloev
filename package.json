@@ -9,6 +9,11 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
+  "overrides": {
+    "@supabase/ssr": {
+      "cookie": "^0.7.0"
+    }
+  },
   "dependencies": {
     "@nuxt/image": "^2.0.0",
     "@nuxtjs/supabase": "^2.0.3",
