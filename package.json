@@ -1,0 +1,50 @@
+{
+  "name": "nuxt-4urloev",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@nuxt/image": "^2.0.0",
+    "@nuxtjs/supabase": "^2.0.3",
+    "@nuxtjs/tailwindcss": "^6.14.0",
+    "@pinia/nuxt": "^0.11.3",
+    "@tresjs/cientos": "^5.2.0",
+    "@tresjs/core": "^5.2.0",
+    "@tresjs/nuxt": "^5.1.2",
+    "@vueuse/core": "^14.1.0",
+    "@vueuse/nuxt": "^14.1.0",
+    "date-fns": "^4.1.0",
+    "embla-carousel-vue": "^8.6.0",
+    "fabric": "^7.0.0",
+    "lucide-vue-next": "^0.562.0",
+    "nuxt": "^4.2.2",
+    "pinia": "^3.0.4",
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "stripe": "^20.1.0",
+    "three": "^0.182.0",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/three": "^0.182.0",
+    "@vee-validate/zod": "^4.15.1",
+    "autoprefixer": "^10.4.23",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "postcss": "^8.5.6",
+    "radix-vue": "^1.9.17",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^3.4.19",
+    "tailwindcss-animate": "^1.0.7",
+    "vee-validate": "^4.15.1",
+    "vue-sonner": "^2.0.9",
+    "vue-tsc": "^3.2.1"
+  }
+}

@@ -1,0 +1,434 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 262.1 83.3% 57.8%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 324.7 77.3% 54.9%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 45.4 93.4% 47.5%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 262.1 83.3% 57.8%;
+    --radius: 0.75rem;
+    
+    /* Custom glass variables */
+    --glass-bg: rgba(255, 255, 255, 0.7);
+    --glass-border: rgba(255, 255, 255, 0.3);
+    --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    
+    /* Gradient backgrounds */
+    --bg-gradient-from: #f8fafc;
+    --bg-gradient-via: #f1f5f9;
+    --bg-gradient-to: #e2e8f0;
+  }
+
+  .dark {
+    --background: 224 71% 4%;
+    --foreground: 213 31% 91%;
+    --card: 224 71% 4%;
+    --card-foreground: 213 31% 91%;
+    --popover: 224 71% 4%;
+    --popover-foreground: 213 31% 91%;
+    --primary: 263.4 70% 50.4%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 324.7 77.3% 54.9%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215.4 16.3% 56.9%;
+    --accent: 45.4 93.4% 47.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 216 34% 17%;
+    --input: 216 34% 17%;
+    --ring: 263.4 70% 50.4%;
+    
+    /* Dark glass variables */
+    --glass-bg: rgba(15, 23, 42, 0.85);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    
+    /* Dark gradient backgrounds */
+    --bg-gradient-from: #020617;
+    --bg-gradient-via: #0f172a;
+    --bg-gradient-to: #1e1b4b;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Ensure dark mode applies to full page */
+  html.dark {
+    color-scheme: dark;
+  }
+
+  html.dark body {
+    @apply bg-background;
+  }
+}
+
+@layer components {
+  /* Glass Card Effect - Modern Glassmorphism */
+  .glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+  }
+
+  .dark .glass-card {
+    background: rgba(15, 23, 42, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+
+  .glass-card-sm {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+  }
+
+  .dark .glass-card-sm {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.08);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  .glass-card-lg {
+    background: var(--glass-bg);
+    backdrop-filter: blur(30px) saturate(200%);
+    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 12px 48px rgba(31, 38, 135, 0.2);
+  }
+
+  .dark .glass-card-lg {
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+  }
+
+  /* Hover lift effect */
+  .hover-lift {
+    @apply transition-all duration-300 ease-out;
+  }
+  
+  .hover-lift:hover {
+    @apply -translate-y-1;
+    box-shadow: 
+      0 20px 40px -10px rgba(31, 38, 135, 0.2),
+      0 0 30px hsl(var(--primary) / 0.1);
+  }
+
+  .dark .hover-lift:hover {
+    box-shadow: 
+      0 20px 40px -10px rgba(0, 0, 0, 0.4),
+      0 0 30px hsl(var(--primary) / 0.2);
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(
+      135deg,
+      hsl(var(--primary)) 0%,
+      hsl(var(--secondary)) 50%,
+      hsl(var(--accent)) 100%
+    );
+  }
+
+  /* Gradient background */
+  .gradient-bg {
+    background: linear-gradient(
+      135deg,
+      var(--bg-gradient-from) 0%,
+      var(--bg-gradient-via) 50%,
+      var(--bg-gradient-to) 100%
+    );
+    min-height: 100vh;
+  }
+
+  /* Dark mode specific gradient */
+  .dark .gradient-bg {
+    background: linear-gradient(
+      135deg,
+      #020617 0%,
+      #0f172a 35%,
+      #1e1b4b 70%,
+      #312e81 100%
+    );
+  }
+
+  /* Animated gradient background */
+  .animated-gradient-bg {
+    background: linear-gradient(
+      -45deg,
+      hsl(var(--primary) / 0.1),
+      hsl(var(--secondary) / 0.1),
+      hsl(var(--accent) / 0.1),
+      hsl(var(--primary) / 0.1)
+    );
+    background-size: 400% 400%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  /* Glow button */
+  .btn-glow {
+    @apply relative overflow-hidden;
+  }
+
+  .btn-glow::before {
+    content: '';
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: radial-gradient(
+      circle at center,
+      hsl(var(--primary) / 0.4) 0%,
+      transparent 70%
+    );
+  }
+
+  .btn-glow:hover::before {
+    @apply opacity-100;
+  }
+
+  /* Shimmer effect */
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      hsl(var(--primary) / 0.1) 50%,
+      transparent 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s linear infinite;
+  }
+
+  /* Focus ring */
+  .focus-ring {
+    @apply outline-none ring-offset-2 ring-offset-background focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  /* Scrollbar styling */
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-muted rounded-full;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-primary/30 rounded-full hover:bg-primary/50 transition-colors;
+  }
+
+  /* Grid pattern background */
+  .grid-pattern {
+    background-image: 
+      linear-gradient(to right, hsl(var(--border) / 0.5) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.5) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  /* Dot pattern background */
+  .dot-pattern {
+    background-image: radial-gradient(
+      circle at center,
+      hsl(var(--primary) / 0.1) 1px,
+      transparent 1px
+    );
+    background-size: 24px 24px;
+  }
+}
+
+@layer utilities {
+  /* Text shadow utilities */
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .text-shadow-lg {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Animation delays */
+  .animation-delay-100 { animation-delay: 100ms; }
+  .animation-delay-200 { animation-delay: 200ms; }
+  .animation-delay-300 { animation-delay: 300ms; }
+  .animation-delay-400 { animation-delay: 400ms; }
+  .animation-delay-500 { animation-delay: 500ms; }
+  .animation-delay-600 { animation-delay: 600ms; }
+  .animation-delay-700 { animation-delay: 700ms; }
+  .animation-delay-800 { animation-delay: 800ms; }
+  .animation-delay-900 { animation-delay: 900ms; }
+  .animation-delay-1000 { animation-delay: 1000ms; }
+}
+
+/* Page transition animations */
+.page-enter-active,
+.page-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+/* Layout transition animations */
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.3s ease-out;
+}
+
+.layout-enter-from {
+  opacity: 0;
+  filter: blur(4px);
+}
+
+.layout-leave-to {
+  opacity: 0;
+  filter: blur(4px);
+}
+
+
+
+
+/* Dark mode enhancements */
+.dark {
+  /* Better text contrast */
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+}
+
+/* Dark mode input styling */
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: hsl(var(--muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--foreground));
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: hsl(var(--muted-foreground));
+}
+
+/* Dark mode card improvements */
+.dark .bg-card {
+  background-color: hsl(var(--card));
+}
+
+/* Dark mode button improvements */
+.dark .bg-muted\/50 {
+  background-color: rgba(30, 41, 59, 0.5);
+}
+
+.dark .hover\:bg-muted\/50:hover {
+  background-color: rgba(30, 41, 59, 0.7);
+}
+
+/* Improved gradient text in dark mode */
+.dark .gradient-text {
+  background-image: linear-gradient(
+    135deg,
+    hsl(var(--primary)) 0%,
+    hsl(var(--secondary)) 50%,
+    hsl(var(--accent)) 100%
+  );
+  filter: brightness(1.1);
+}
+
+/* Dark mode scrollbar */
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+  background-color: hsl(var(--muted));
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--primary) / 0.4);
+}
+
+/* Dark mode animated gradient */
+.dark .animated-gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    hsl(var(--primary) / 0.15),
+    hsl(var(--secondary) / 0.15),
+    hsl(var(--accent) / 0.15),
+    hsl(var(--primary) / 0.15)
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+/* Dark mode patterns */
+.dark .grid-pattern {
+  background-image: 
+    linear-gradient(to right, hsl(var(--border) / 0.3) 1px, transparent 1px),
+    linear-gradient(to bottom, hsl(var(--border) / 0.3) 1px, transparent 1px);
+}
+
+.dark .dot-pattern {
+  background-image: radial-gradient(
+    circle at center,
+    hsl(var(--primary) / 0.15) 1px,
+    transparent 1px
+  );
+}
+
+/* Dark mode shadows */
+.dark .shadow-lg {
+  --tw-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+}
+
+.dark .shadow-xl {
+  --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+}
+
+.dark .shadow-2xl {
+  --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
