@@ -2,20 +2,31 @@
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-vue-next'
 import { formatPrice } from '~/lib/utils'
 
-const cartStore = useCartStore()
+// SSR-safe store access
+const cartStore = import.meta.client ? useCartStore() : null
+
+// SSR-safe computed values
+const items = computed(() => cartStore?.items ?? [])
+const isEmpty = computed(() => cartStore?.isEmpty ?? true)
+const totalItems = computed(() => cartStore?.totalItems ?? 0)
+const totalPrice = computed(() => cartStore?.totalPrice ?? 0)
 
 const handleUpdateQuantity = (productId: string, delta: number) => {
-  const item = cartStore.items.find(i => i.product.id === productId)
+  const item = items.value.find(i => i.product.id === productId)
   if (item) {
     const newQuantity = item.quantity + delta
     if (newQuantity > 0) {
-      cartStore.updateQuantity(productId, newQuantity)
+      cartStore?.updateQuantity(productId, newQuantity)
     }
   }
 }
 
 const handleRemoveItem = (productId: string) => {
-  cartStore.removeItem(productId)
+  cartStore?.removeItem(productId)
+}
+
+const handleClearCart = () => {
+  cartStore?.clearCart()
 }
 
 useSeoMeta({
@@ -30,7 +41,7 @@ useSeoMeta({
       Keranjang Belanja
     </h1>
 
-    <div v-if="cartStore.isEmpty" class="text-center py-16 animate-fade-up">
+    <div v-if="isEmpty" class="text-center py-16 animate-fade-up">
       <div class="glass-card rounded-3xl p-12 max-w-md mx-auto">
         <ShoppingCart class="h-16 w-16 text-muted-foreground mx-auto mb-6" />
         <h2 class="text-2xl font-semibold mb-4">Keranjang Kosong</h2>
@@ -58,7 +69,7 @@ useSeoMeta({
           leave-to-class="opacity-0 translate-x-4"
         >
           <div
-            v-for="(item, index) in cartStore.items"
+            v-for="(item, index) in items"
             :key="item.product.id"
             :class="`glass-card rounded-2xl p-4 sm:p-6 animate-fade-up animation-delay-${(index + 1) * 100}`"
           >
@@ -149,7 +160,7 @@ useSeoMeta({
 
         <!-- Clear Cart -->
         <div class="flex justify-end pt-4">
-          <UiButton variant="outline" @click="cartStore.clearCart()">
+          <UiButton variant="outline" @click="handleClearCart">
             <Trash2 class="h-4 w-4" />
             Kosongkan Keranjang
           </UiButton>
@@ -163,8 +174,8 @@ useSeoMeta({
 
           <div class="space-y-4 mb-6">
             <div class="flex justify-between">
-              <span class="text-muted-foreground">Subtotal ({{ cartStore.totalItems }} item)</span>
-              <span class="font-medium">{{ formatPrice(cartStore.totalPrice) }}</span>
+              <span class="text-muted-foreground">Subtotal ({{ totalItems }} item)</span>
+              <span class="font-medium">{{ formatPrice(totalPrice) }}</span>
             </div>
             <div class="flex justify-between">
               <span class="text-muted-foreground">Ongkir</span>
@@ -173,7 +184,7 @@ useSeoMeta({
             <UiSeparator />
             <div class="flex justify-between">
               <span class="font-semibold">Total</span>
-              <span class="text-2xl font-bold gradient-text">{{ formatPrice(cartStore.totalPrice) }}</span>
+              <span class="text-2xl font-bold gradient-text">{{ formatPrice(totalPrice) }}</span>
             </div>
           </div>
 

@@ -218,6 +218,16 @@ const setTheme = (theme: Record<string, unknown>) => {
         </div>
       </div>
     </Transition>
+    
+    <!-- Fallback for SSR -->
+    <template #fallback>
+      <button
+        class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg hover:shadow-xl hover:scale-110 transition-all"
+        aria-label="Open theme customizer"
+      >
+        <Settings class="h-5 w-5 text-primary animate-spin" style="animation-duration: 10s" />
+      </button>
+    </template>
   </ClientOnly>
 </template>
 

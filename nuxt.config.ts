@@ -301,6 +301,7 @@ export default defineNuxtConfig({
     // Checkout pages - SSR disabled (requires auth)
     '/checkout/**': { ssr: false },
     // Auth pages - SSR disabled
+    '/auth': { ssr: false },
     '/auth/**': { ssr: false },
     // Static assets caching (Requirements: 4.1)
     '/_nuxt/**': {

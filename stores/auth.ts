@@ -247,11 +247,6 @@ export const useAuthStore = defineStore('auth', () => {
     updateProfile,
     updateActivity,
   }
-}, {
-  persist: {
-    storage: import.meta.client ? localStorage : undefined,
-    pick: ['user', 'session'],
-  },
 })
 
 

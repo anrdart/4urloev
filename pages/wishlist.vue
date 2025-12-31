@@ -2,19 +2,23 @@
 import { Heart, ShoppingCart, Trash2, ShoppingBag } from 'lucide-vue-next'
 import { formatPrice } from '~/lib/utils'
 
-const wishlistStore = useWishlistStore()
-const cartStore = useCartStore()
+// SSR-safe store access
+const wishlistStore = import.meta.client ? useWishlistStore() : null
+
+// SSR-safe computed values
+const items = computed(() => wishlistStore?.items ?? [])
+const isEmpty = computed(() => wishlistStore?.isEmpty ?? true)
 
 const handleMoveToCart = (productId: string) => {
-  wishlistStore.moveToCart(productId)
+  wishlistStore?.moveToCart(productId)
 }
 
 const handleRemoveItem = (productId: string) => {
-  wishlistStore.removeItem(productId)
+  wishlistStore?.removeItem(productId)
 }
 
 const handleMoveAllToCart = () => {
-  wishlistStore.moveAllToCart()
+  wishlistStore?.moveAllToCart()
 }
 
 useSeoMeta({
@@ -30,7 +34,7 @@ useSeoMeta({
         Wishlist
       </h1>
       <UiButton
-        v-if="!wishlistStore.isEmpty"
+        v-if="!isEmpty"
         variant="outline"
         @click="handleMoveAllToCart"
       >
@@ -39,7 +43,7 @@ useSeoMeta({
       </UiButton>
     </div>
 
-    <div v-if="wishlistStore.isEmpty" class="text-center py-16 animate-fade-up">
+    <div v-if="isEmpty" class="text-center py-16 animate-fade-up">
       <div class="glass-card rounded-3xl p-12 max-w-md mx-auto">
         <Heart class="h-16 w-16 text-muted-foreground mx-auto mb-6" />
         <h2 class="text-2xl font-semibold mb-4">Wishlist Kosong</h2>
@@ -65,7 +69,7 @@ useSeoMeta({
         leave-to-class="opacity-0 scale-95"
       >
         <div
-          v-for="(item, index) in wishlistStore.items"
+          v-for="(item, index) in items"
           :key="item.product.id"
           :class="`glass-card rounded-2xl overflow-hidden hover-lift animate-fade-up animation-delay-${(index + 1) * 100}`"
         >
