@@ -7,10 +7,8 @@ const cartStore = useCartStore()
 
 const { data: bundles, pending } = await useAsyncData('bundles', () => getBundles(true))
 
-useSeoMeta({
-  title: 'Bundles - 4UrLoev',
-  description: 'Hemat lebih banyak dengan bundle package spesial dari 4UrLoev',
-})
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.bundles)
 </script>
 
 <template>

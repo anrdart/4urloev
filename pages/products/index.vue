@@ -70,10 +70,14 @@ const handleSort = (option: typeof sortOptions[0]) => {
   sortOrder.value = option.order as any
 }
 
-useSeoMeta({
-  title: 'Produk - 4UrLoev',
-  description: 'Jelajahi koleksi lengkap produk DIY dan hadiah personalisasi dari 4UrLoev',
-})
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.products)
+
+// Structured Data - Breadcrumb schema (Requirement 6.4)
+useBreadcrumbSchema([
+  { name: 'Home', url: '/' },
+  { name: 'Produk', url: '/products' },
+])
 </script>
 
 <template>
@@ -173,7 +177,13 @@ useSeoMeta({
 
     <!-- Products Grid -->
     <div v-if="pending" :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'">
-      <UiSkeleton v-for="i in 8" :key="i" :class="viewMode === 'grid' ? 'h-80 rounded-2xl' : 'h-32 rounded-2xl'" />
+      <!-- Fixed height skeleton for CLS prevention (Requirement 8.4) -->
+      <UiLoadingSkeleton 
+        v-for="i in 8" 
+        :key="i" 
+        :variant="viewMode === 'grid' ? 'product' : 'card'"
+        :height="viewMode === 'list' ? 128 : undefined"
+      />
     </div>
 
     <div v-else-if="products?.length" :class="viewMode === 'grid' ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' : 'space-y-4'">

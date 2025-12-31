@@ -31,10 +31,8 @@ const stats = [
   { value: '4.9', label: 'Rating' },
 ]
 
-useSeoMeta({
-  title: 'Tentang Kami - 4UrLoev',
-  description: 'Kenali lebih dekat 4UrLoev - platform DIY products dan personalized gifts terdepan di Indonesia',
-})
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.about)
 </script>
 
 <template>

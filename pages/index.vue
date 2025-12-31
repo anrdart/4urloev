@@ -15,13 +15,14 @@ const { data: bundles, pending: bundlesLoading } = await useAsyncData(
   () => getBundles(true)
 )
 
-useSeoMeta({
-  title: '4UrLoev - DIY Products & Personalized Gifts',
-  description: 'Pilih jalur yang tepat: Desain siap pakai instant download atau desain kustom eksklusif. Solusi lengkap untuk kebutuhan desain Anda.',
-  ogTitle: '4UrLoev - DIY Products & Personalized Gifts',
-  ogDescription: 'Pilih jalur yang tepat: Desain siap pakai instant download atau desain kustom eksklusif.',
-  ogImage: '/og-image.png',
-})
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.home)
+
+// Structured Data - Organization and Website schemas (Requirements: 6.2, 5.5)
+useHomepageStructuredData()
+
+// LCP Optimization (Requirement 8.1)
+useHomepageLCP()
 
 const features = [
   {
@@ -169,7 +170,8 @@ const testimonials = [
         </div>
         
         <div v-if="productsLoading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          <UiSkeleton v-for="i in 6" :key="i" class="h-80 rounded-2xl" />
+          <!-- Fixed height skeleton for CLS prevention (Requirement 8.4) -->
+          <UiLoadingSkeleton v-for="i in 6" :key="i" variant="product" />
         </div>
         
         <div v-else-if="featuredProducts?.length" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -177,6 +179,7 @@ const testimonials = [
             v-for="(product, index) in featuredProducts"
             :key="product.id"
             :product="product"
+            :priority="index < 3"
             :class="`animate-fade-up animation-delay-${(index + 1) * 100}`"
           />
         </div>

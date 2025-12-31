@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { Mail, Phone, MapPin, Send, MessageCircle } from 'lucide-vue-next'
 
-useSeoMeta({
-  title: 'Hubungi Kami - 4UrLoev',
-  description: 'Hubungi tim 4UrLoev untuk pertanyaan, saran, atau bantuan. Kami siap membantu Anda.',
-})
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.contact)
 
 const form = ref({
   name: '',

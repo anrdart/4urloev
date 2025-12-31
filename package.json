@@ -7,7 +7,10 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --run --coverage"
   },
   "overrides": {
     "@supabase/ssr": {
@@ -16,6 +19,7 @@
   },
   "dependencies": {
     "@nuxt/image": "^2.0.0",
+    "@nuxtjs/sitemap": "^7.5.0",
     "@nuxtjs/supabase": "^2.0.3",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@pinia/nuxt": "^0.11.3",
@@ -38,17 +42,22 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@nuxt/test-utils": "^3.21.0",
     "@types/three": "^0.182.0",
     "@vee-validate/zod": "^4.15.1",
+    "@vue/test-utils": "^2.4.6",
     "autoprefixer": "^10.4.23",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "fast-check": "^4.5.2",
+    "happy-dom": "^20.0.11",
     "postcss": "^8.5.6",
     "radix-vue": "^1.9.17",
     "tailwind-merge": "^3.4.0",
     "tailwindcss": "^3.4.19",
     "tailwindcss-animate": "^1.0.7",
     "vee-validate": "^4.15.1",
+    "vitest": "^3.2.4",
     "vue-sonner": "^2.0.9",
     "vue-tsc": "^3.2.1"
   }

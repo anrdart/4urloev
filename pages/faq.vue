@@ -90,10 +90,18 @@ const toggleItem = (id: string) => {
   }
 }
 
-useSeoMeta({
-  title: 'FAQ - 4UrLoev',
-  description: 'Pertanyaan yang sering diajukan tentang pemesanan, pembayaran, dan pengiriman di 4UrLoev',
-})
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.faq)
+
+// Structured Data - FAQPage schema (Requirement 6.5)
+// Flatten all FAQs from all categories for structured data
+const allFaqs = faqCategories.flatMap(category => 
+  category.faqs.map(faq => ({
+    question: faq.question,
+    answer: faq.answer,
+  }))
+)
+useFAQSchema(allFaqs)
 </script>
 
 <template>

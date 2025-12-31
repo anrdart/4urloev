@@ -88,28 +88,28 @@ export default {
           to: { opacity: '1' },
         },
         'fade-up': {
-          from: { opacity: '0', transform: 'translateY(20px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          from: { opacity: '0', transform: 'translateY(20px) translateZ(0)' },
+          to: { opacity: '1', transform: 'translateY(0) translateZ(0)' },
         },
         'fade-down': {
-          from: { opacity: '0', transform: 'translateY(-20px)' },
-          to: { opacity: '1', transform: 'translateY(0)' },
+          from: { opacity: '0', transform: 'translateY(-20px) translateZ(0)' },
+          to: { opacity: '1', transform: 'translateY(0) translateZ(0)' },
         },
         'scale-in': {
-          from: { opacity: '0', transform: 'scale(0.95)' },
-          to: { opacity: '1', transform: 'scale(1)' },
+          from: { opacity: '0', transform: 'scale(0.95) translateZ(0)' },
+          to: { opacity: '1', transform: 'scale(1) translateZ(0)' },
         },
         'slide-in-right': {
-          from: { opacity: '0', transform: 'translateX(20px)' },
-          to: { opacity: '1', transform: 'translateX(0)' },
+          from: { opacity: '0', transform: 'translateX(20px) translateZ(0)' },
+          to: { opacity: '1', transform: 'translateX(0) translateZ(0)' },
         },
         'slide-in-left': {
-          from: { opacity: '0', transform: 'translateX(-20px)' },
-          to: { opacity: '1', transform: 'translateX(0)' },
+          from: { opacity: '0', transform: 'translateX(-20px) translateZ(0)' },
+          to: { opacity: '1', transform: 'translateX(0) translateZ(0)' },
         },
         float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-10px)' },
+          '0%, 100%': { transform: 'translateY(0) translateZ(0)' },
+          '50%': { transform: 'translateY(-10px) translateZ(0)' },
         },
         shimmer: {
           from: { backgroundPosition: '200% 0' },
@@ -118,11 +118,11 @@ export default {
         'pulse-glow': {
           '0%, 100%': { 
             boxShadow: '0 0 20px hsl(var(--primary) / 0.3)',
-            transform: 'scale(1)',
+            transform: 'scale(1) translateZ(0)',
           },
           '50%': { 
             boxShadow: '0 0 40px hsl(var(--primary) / 0.5)',
-            transform: 'scale(1.02)',
+            transform: 'scale(1.02) translateZ(0)',
           },
         },
       },

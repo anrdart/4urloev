@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { Sparkles } from 'lucide-vue-next'
 
+/**
+ * Hero section with lazy-loaded 3D components
+ * Requirements: 2.2 - Lazy load 3D components only when required
+ */
+
 const products = [
   {
     type: 'gift' as const,
@@ -21,6 +26,19 @@ const products = [
     desc: 'Personalisasi sesuai keinginan',
   },
 ]
+
+// Lazy load 3D components using defineAsyncComponent
+const LazyScene3DWrapper = defineAsyncComponent({
+  loader: () => import('~/components/3d/LazyScene3DWrapper.vue'),
+  delay: 200,
+  timeout: 30000,
+})
+
+const LazyProduct3DShowcase = defineAsyncComponent({
+  loader: () => import('~/components/3d/LazyProduct3DShowcase.vue'),
+  delay: 200,
+  timeout: 30000,
+})
 </script>
 
 <template>
@@ -51,9 +69,9 @@ const products = [
           :class="`glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 hover-lift animate-fade-up animation-delay-${(index + 1) * 200}`"
         >
           <ClientOnly>
-            <ThreeDScene3DWrapper height="250px">
-              <ThreeDProduct3DShowcase :type="item.type" :color="item.color" />
-            </ThreeDScene3DWrapper>
+            <LazyScene3DWrapper height="250px">
+              <LazyProduct3DShowcase :type="item.type" :color="item.color" />
+            </LazyScene3DWrapper>
             <template #fallback>
               <div class="h-[250px] bg-muted/50 rounded-xl flex items-center justify-center">
                 <p class="text-muted-foreground">Loading 3D...</p>

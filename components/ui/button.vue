@@ -59,5 +59,3 @@ const delegatedProps = computed(() => {
     <slot />
   </Primitive>
 </template>
-
-

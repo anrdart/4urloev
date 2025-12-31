@@ -1,9 +1,19 @@
 <script setup lang="ts">
 import { Sparkles, Wand2 } from 'lucide-vue-next'
 
-useSeoMeta({
-  title: 'Customize - 4UrLoev',
-  description: 'Buat desain custom Anda sendiri dengan alat kustomisasi canggih kami',
+/**
+ * Customize page with lazy-loaded Fabric.js customizer
+ * Requirements: 2.3 - Dynamically import Fabric.js on demand
+ */
+
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 7.3)
+useSeo(defaultSeoConfigs.customize)
+
+// Lazy load the customizer component to defer Fabric.js loading
+const LazyLivePreviewCustomizer = defineAsyncComponent({
+  loader: () => import('~/components/products/LazyLivePreviewCustomizer.vue'),
+  delay: 200,
+  timeout: 60000,
 })
 </script>
 
@@ -45,7 +55,7 @@ useSeoMeta({
     <!-- Customizer -->
     <div class="animate-fade-up animation-delay-200">
       <ClientOnly>
-        <ProductsLivePreviewCustomizer />
+        <LazyLivePreviewCustomizer />
         <template #fallback>
           <div class="glass-card rounded-2xl p-12 text-center">
             <div class="w-12 h-12 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4" />

@@ -3,15 +3,26 @@ import { Heart, ShoppingCart, Eye } from 'lucide-vue-next'
 import type { Product } from '~/types'
 import { formatPrice } from '~/lib/utils'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   product: Product
-}>()
+  priority?: boolean
+}>(), {
+  priority: false,
+})
 
-const cartStore = useCartStore()
-const wishlistStore = useWishlistStore()
+// SSR-safe store access
+const cartStore = import.meta.client ? useCartStore() : null
+const wishlistStore = import.meta.client ? useWishlistStore() : null
 
-const isInWishlist = computed(() => wishlistStore.hasItem(props.product.id))
-const isInCart = computed(() => cartStore.hasItem(props.product.id))
+// Track if component is mounted (client-side)
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
+
+// SSR-safe computed - always return false on server to prevent hydration mismatch
+const isInWishlist = computed(() => isMounted.value && wishlistStore?.hasItem(props.product.id))
+const isInCart = computed(() => isMounted.value && cartStore?.hasItem(props.product.id))
 
 const primaryImage = computed(() => {
   const primary = props.product.product_images?.find(img => img.is_primary)
@@ -19,11 +30,11 @@ const primaryImage = computed(() => {
 })
 
 const handleAddToCart = () => {
-  cartStore.addItem(props.product, 1)
+  cartStore?.addItem(props.product, 1)
 }
 
 const handleToggleWishlist = () => {
-  wishlistStore.toggleItem(props.product)
+  wishlistStore?.toggleItem(props.product)
 }
 </script>
 
@@ -31,11 +42,18 @@ const handleToggleWishlist = () => {
   <div class="group glass-card rounded-2xl overflow-hidden hover-lift">
     <!-- Image Container -->
     <div class="relative aspect-square overflow-hidden bg-muted/50">
-      <NuxtImg
+      <UiOptimizedImage
         :src="primaryImage"
         :alt="product.name"
-        class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-        loading="lazy"
+        :width="400"
+        :height="400"
+        :priority="priority"
+        preset="productCard"
+        placeholder="skeleton"
+        fit="cover"
+        class="w-full h-full"
+        img-class="transition-transform duration-500 group-hover:scale-110"
+        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
       />
       
       <!-- Overlay actions -->

@@ -29,6 +29,13 @@ const isInWishlist = computed(() => wishlistStore.hasItem(productId))
 const images = computed(() => product.value?.product_images || [])
 const currentImage = computed(() => images.value[selectedImageIndex.value]?.url || '/placeholder.svg')
 
+// LCP Optimization - Preload main product image (Requirement 8.1)
+watchEffect(() => {
+  if (product.value && currentImage.value) {
+    useProductPageLCP(currentImage.value)
+  }
+})
+
 const incrementQuantity = () => {
   if (product.value?.stock && quantity.value < product.value.stock) {
     quantity.value++
@@ -83,12 +90,21 @@ const prevImage = () => {
   }
 }
 
-useSeoMeta({
-  title: () => product.value ? `${product.value.name} - 4UrLoev` : 'Product - 4UrLoev',
-  description: () => product.value?.description || '',
-  ogTitle: () => product.value?.name || '',
-  ogDescription: () => product.value?.description || '',
-  ogImage: () => currentImage.value,
+// SEO Meta Tags (Requirements: 5.1, 5.2, 5.3, 5.4, 7.3)
+// Using reactive product SEO - will update when product data changes
+watchEffect(() => {
+  if (product.value) {
+    useProductSeo({
+      product: product.value,
+      currentImage: currentImage.value,
+    })
+    
+    // Structured Data - Product and Breadcrumb schemas (Requirements: 6.1, 6.3, 6.4)
+    useProductPageStructuredData({
+      product: product.value,
+      currentImage: currentImage.value,
+    })
+  }
 })
 </script>
 
@@ -117,10 +133,16 @@ useSeoMeta({
       <!-- Image Gallery -->
       <div class="space-y-4 animate-fade-up">
         <div class="relative aspect-square rounded-3xl overflow-hidden glass-card">
+          <!-- Main product image with LCP optimization (Requirement 8.1) -->
           <NuxtImg
             :src="currentImage"
             :alt="product.name"
             class="w-full h-full object-cover"
+            loading="eager"
+            :fetchpriority="selectedImageIndex === 0 ? 'high' : 'auto'"
+            width="800"
+            height="800"
+            preset="productDetail"
           />
           
           <!-- Navigation arrows -->

@@ -2,6 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+ * Font Loading Optimization (Requirements: 4.5)
+ * font-display: swap ensures text is visible during font loading
+ * ============================================ */
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: local('Plus Jakarta Sans');
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -94,13 +106,16 @@
 }
 
 @layer components {
-  /* Glass Card Effect - Modern Glassmorphism */
+  /* Glass Card Effect - Modern Glassmorphism with GPU optimization */
   .glass-card {
     background: var(--glass-bg);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border: 1px solid var(--glass-border);
     box-shadow: var(--glass-shadow);
+    /* GPU acceleration hints for glassmorphism */
+    will-change: backdrop-filter, transform;
+    transform: translateZ(0);
   }
 
   .dark .glass-card {
@@ -115,6 +130,9 @@
     -webkit-backdrop-filter: blur(12px) saturate(150%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 4px 16px rgba(31, 38, 135, 0.1);
+    /* GPU acceleration hints for glassmorphism */
+    will-change: backdrop-filter, transform;
+    transform: translateZ(0);
   }
 
   .dark .glass-card-sm {
@@ -129,6 +147,9 @@
     -webkit-backdrop-filter: blur(30px) saturate(200%);
     border: 1px solid var(--glass-border);
     box-shadow: 0 12px 48px rgba(31, 38, 135, 0.2);
+    /* GPU acceleration hints for glassmorphism */
+    will-change: backdrop-filter, transform;
+    transform: translateZ(0);
   }
 
   .dark .glass-card-lg {
@@ -137,13 +158,15 @@
     box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
   }
 
-  /* Hover lift effect */
+  /* Hover lift effect - GPU accelerated using transform only */
   .hover-lift {
-    @apply transition-all duration-300 ease-out;
+    @apply transition-transform duration-300 ease-out;
+    will-change: transform, box-shadow;
+    transform: translateZ(0);
   }
   
   .hover-lift:hover {
-    @apply -translate-y-1;
+    transform: translateY(-4px) translateZ(0);
     box-shadow: 
       0 20px 40px -10px rgba(31, 38, 135, 0.2),
       0 0 30px hsl(var(--primary) / 0.1);
@@ -188,7 +211,7 @@
     );
   }
 
-  /* Animated gradient background */
+  /* Animated gradient background - GPU accelerated */
   .animated-gradient-bg {
     background: linear-gradient(
       -45deg,
@@ -199,6 +222,8 @@
     );
     background-size: 400% 400%;
     animation: gradient-shift 15s ease infinite;
+    will-change: background-position;
+    transform: translateZ(0);
   }
 
   @keyframes gradient-shift {
@@ -207,26 +232,30 @@
     100% { background-position: 0% 50%; }
   }
 
-  /* Glow button */
+  /* Glow button - GPU accelerated */
   .btn-glow {
     @apply relative overflow-hidden;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   .btn-glow::before {
     content: '';
-    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    @apply absolute inset-0 transition-opacity duration-300;
+    opacity: 0;
     background: radial-gradient(
       circle at center,
       hsl(var(--primary) / 0.4) 0%,
       transparent 70%
     );
+    will-change: opacity;
   }
 
   .btn-glow:hover::before {
-    @apply opacity-100;
+    opacity: 1;
   }
 
-  /* Shimmer effect */
+  /* Shimmer effect - GPU accelerated */
   .shimmer {
     background: linear-gradient(
       90deg,
@@ -236,6 +265,8 @@
     );
     background-size: 200% 100%;
     animation: shimmer 2s linear infinite;
+    will-change: background-position;
+    transform: translateZ(0);
   }
 
   /* Focus ring */
@@ -302,36 +333,67 @@
   .animation-delay-1000 { animation-delay: 1000ms; }
 }
 
-/* Page transition animations */
+/* Page transition animations - GPU accelerated using transform/opacity only */
 .page-enter-active,
 .page-leave-active {
-  transition: all 0.3s ease-out;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  will-change: opacity, transform;
 }
 
 .page-enter-from {
   opacity: 0;
-  transform: translateY(10px);
+  transform: translateY(10px) translateZ(0);
 }
 
 .page-leave-to {
   opacity: 0;
-  transform: translateY(-10px);
+  transform: translateY(-10px) translateZ(0);
 }
 
-/* Layout transition animations */
+/* Layout transition animations - GPU accelerated using transform/opacity only */
 .layout-enter-active,
 .layout-leave-active {
-  transition: all 0.3s ease-out;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  will-change: opacity, transform;
 }
 
 .layout-enter-from {
   opacity: 0;
-  filter: blur(4px);
+  transform: scale(0.98) translateZ(0);
 }
 
 .layout-leave-to {
   opacity: 0;
-  filter: blur(4px);
+  transform: scale(0.98) translateZ(0);
+}
+
+/* Reduced motion support - respect user preferences */
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active,
+  .layout-enter-active,
+  .layout-leave-active {
+    transition: opacity 0.15s ease-out;
+  }
+  
+  .page-enter-from,
+  .page-leave-to,
+  .layout-enter-from,
+  .layout-leave-to {
+    transform: none;
+  }
+  
+  .animated-gradient-bg {
+    animation: none;
+  }
+  
+  .shimmer {
+    animation: none;
+  }
+  
+  .hover-lift:hover {
+    transform: none;
+  }
 }
 
 
@@ -431,4 +493,48 @@
 
 .dark .shadow-2xl {
   --tw-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* Mobile-responsive animation adjustments */
+@media (max-width: 767px) {
+  /* Reduce animation complexity on mobile for better performance */
+  .animated-gradient-bg {
+    animation-duration: 20s; /* Slower animation on mobile */
+  }
+  
+  .shimmer {
+    animation-duration: 3s; /* Slower shimmer on mobile */
+  }
+  
+  /* Reduce glassmorphism blur on mobile for performance */
+  .glass-card {
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+  }
+  
+  .glass-card-lg {
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+  }
+  
+  /* Disable hover effects on touch devices */
+  .hover-lift {
+    will-change: auto;
+  }
+  
+  .hover-lift:hover {
+    transform: none;
+  }
+  
+  /* Faster page transitions on mobile */
+  .page-enter-active,
+  .page-leave-active {
+    transition-duration: 0.2s;
+  }
+  
+  /* Reduce float animation distance on mobile */
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateZ(0); }
+    50% { transform: translateY(-5px) translateZ(0); }
+  }
 }
