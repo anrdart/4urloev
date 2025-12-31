@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Menu, X, Sparkles, Moon, User, ShoppingCart, Heart } from 'lucide-vue-next'
+import { Menu, X, ShoppingCart, Heart, User, Sun, Moon, Sparkles } from 'lucide-vue-next'
 
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
@@ -71,27 +71,9 @@ const handleScroll = () => {
           </NuxtLink>
         </div>
 
-        <!-- Desktop Actions - Client Only Component -->
-        <div class="hidden md:block">
+        <!-- Desktop Actions -->
+        <div class="hidden md:flex items-center gap-3">
           <LayoutNavbarActions />
-          <!-- SSR Fallback -->
-          <div class="hidden-when-client-loaded flex items-center gap-3">
-            <button class="p-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="Toggle theme">
-              <Moon class="h-5 w-5" />
-            </button>
-            <NuxtLink to="/wishlist" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
-              <Heart class="h-5 w-5" />
-            </NuxtLink>
-            <NuxtLink to="/cart" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
-              <ShoppingCart class="h-5 w-5" />
-            </NuxtLink>
-            <NuxtLink to="/auth">
-              <UiButton variant="default" size="sm">
-                <User class="h-4 w-4 mr-2" />
-                Masuk
-              </UiButton>
-            </NuxtLink>
-          </div>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -127,17 +109,9 @@ const handleScroll = () => {
 
           <UiSeparator />
 
-          <!-- Mobile Actions - Client Only Component -->
           <LayoutNavbarMobileActions @close-menu="closeMenu" />
         </div>
       </Transition>
     </nav>
   </header>
 </template>
-
-<style scoped>
-/* Hide SSR fallback when client component is loaded */
-.hidden-when-client-loaded {
-  display: none;
-}
-</style>

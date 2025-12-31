@@ -1,10 +1,9 @@
 <script setup lang="ts">
-// Initialize stores on client side only
+const authStore = useAuthStore()
+const themeStore = useThemeStore()
+
 onMounted(async () => {
   try {
-    const authStore = useAuthStore()
-    const themeStore = useThemeStore()
-    
     await authStore.initialize()
     themeStore.applyTheme()
     
@@ -35,10 +34,7 @@ onMounted(async () => {
     
     <LayoutFooter />
     <LayoutFloatingWhatsApp />
-    
-    <!-- Theme Customizer - Client Only -->
     <ThemeThemeCustomizer />
-    
     <UiToast />
   </div>
 </template>

@@ -5,10 +5,15 @@ const emit = defineEmits<{
   closeMenu: []
 }>()
 
+const isMounted = ref(false)
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 const themeStore = useThemeStore()
+
+onMounted(() => {
+  isMounted.value = true
+})
 
 const toggleDark = () => {
   themeStore.toggleDark()
@@ -22,14 +27,17 @@ const toggleDark = () => {
         @click="toggleDark"
         class="p-2 rounded-full hover:bg-muted/50 transition-colors"
       >
-        <Sun v-if="themeStore.isDark" class="h-5 w-5" />
+        <template v-if="isMounted">
+          <Sun v-if="themeStore.isDark" class="h-5 w-5" />
+          <Moon v-else class="h-5 w-5" />
+        </template>
         <Moon v-else class="h-5 w-5" />
       </button>
 
       <NuxtLink to="/wishlist" class="relative p-2 rounded-full hover:bg-muted/50" @click="emit('closeMenu')">
         <Heart class="h-5 w-5" />
         <span
-          v-if="wishlistStore.totalItems > 0"
+          v-if="isMounted && wishlistStore.totalItems > 0"
           class="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
         >
           {{ wishlistStore.totalItems }}
@@ -39,7 +47,7 @@ const toggleDark = () => {
       <NuxtLink to="/cart" class="relative p-2 rounded-full hover:bg-muted/50" @click="emit('closeMenu')">
         <ShoppingCart class="h-5 w-5" />
         <span
-          v-if="cartStore.totalItems > 0"
+          v-if="isMounted && cartStore.totalItems > 0"
           class="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
         >
           {{ cartStore.totalItems }}
@@ -47,7 +55,7 @@ const toggleDark = () => {
       </NuxtLink>
     </div>
 
-    <template v-if="authStore.isAuthenticated">
+    <template v-if="isMounted && authStore.isAuthenticated">
       <NuxtLink to="/account" @click="emit('closeMenu')">
         <UiButton variant="outline" size="sm">Akun</UiButton>
       </NuxtLink>

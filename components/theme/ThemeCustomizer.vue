@@ -2,8 +2,13 @@
 import { Settings, X, Palette, Sun, Moon, Sparkles, RotateCcw, Save } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
+const isMounted = ref(false)
 const themeStore = useThemeStore()
 const authStore = useAuthStore()
+
+onMounted(() => {
+  isMounted.value = true
+})
 
 const colorPresets = [
   { name: 'Purple', primary: '#8B5CF6', secondary: '#EC4899', accent: '#F59E0B' },
@@ -47,7 +52,7 @@ const setTheme = (theme: Record<string, unknown>) => {
 </script>
 
 <template>
-  <div>
+  <div v-if="isMounted">
     <!-- Toggle Button -->
     <button
       v-if="!themeStore.isCustomizerOpen"
@@ -200,5 +205,10 @@ const setTheme = (theme: Record<string, unknown>) => {
         </div>
       </div>
     </Transition>
+  </div>
+  
+  <!-- SSR Placeholder - shows gear icon during SSR -->
+  <div v-else class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg">
+    <Settings class="h-5 w-5 text-primary animate-spin" style="animation-duration: 10s" />
   </div>
 </template>
