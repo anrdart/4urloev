@@ -2,7 +2,6 @@
 import { Settings, X, Palette, Sun, Moon, Sparkles, RotateCcw, Save } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
-// Direct store access
 const themeStore = useThemeStore()
 const authStore = useAuthStore()
 
@@ -42,25 +41,17 @@ const handleReset = () => {
   toast.success('Tema direset ke default')
 }
 
-const toggleCustomizer = () => {
-  themeStore.toggleCustomizer()
-}
-
-const toggleDark = () => {
-  themeStore.toggleDark()
-}
-
 const setTheme = (theme: Record<string, unknown>) => {
   themeStore.setTheme(theme)
 }
 </script>
 
 <template>
-  <ClientOnly>
+  <div>
     <!-- Toggle Button -->
     <button
       v-if="!themeStore.isCustomizerOpen"
-      @click="toggleCustomizer"
+      @click="themeStore.toggleCustomizer()"
       class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg hover:shadow-xl hover:scale-110 transition-all"
       aria-label="Open theme customizer"
     >
@@ -87,7 +78,7 @@ const setTheme = (theme: Record<string, unknown>) => {
             <span class="font-semibold">Kustomisasi Tema</span>
           </div>
           <button
-            @click="toggleCustomizer"
+            @click="themeStore.toggleCustomizer()"
             class="p-2 rounded-full hover:bg-muted/50 transition-colors"
           >
             <X class="h-5 w-5" />
@@ -104,7 +95,7 @@ const setTheme = (theme: Record<string, unknown>) => {
                 <span class="font-medium">Mode Gelap</span>
               </div>
               <button
-                @click="toggleDark"
+                @click="themeStore.toggleDark()"
                 :class="[
                   'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
                   themeStore.isDark ? 'bg-primary' : 'bg-muted'
@@ -209,12 +200,5 @@ const setTheme = (theme: Record<string, unknown>) => {
         </div>
       </div>
     </Transition>
-    
-    <!-- Fallback for SSR - static button that will be replaced -->
-    <template #fallback>
-      <div class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg">
-        <Settings class="h-5 w-5 text-primary animate-spin" style="animation-duration: 10s" />
-      </div>
-    </template>
-  </ClientOnly>
+  </div>
 </template>

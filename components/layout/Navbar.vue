@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { Menu, X, ShoppingCart, Heart, User, Sun, Moon, Sparkles } from 'lucide-vue-next'
+import { Menu, X, Sparkles, Moon, User, ShoppingCart, Heart } from 'lucide-vue-next'
 
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
-
-// Direct store access - Nuxt handles SSR safety for Pinia
-const authStore = useAuthStore()
-const cartStore = useCartStore()
-const wishlistStore = useWishlistStore()
-const themeStore = useThemeStore()
 
 const navItems = [
   { name: 'Produk', path: '/products' },
@@ -22,8 +16,8 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
-const toggleDark = () => {
-  themeStore.toggleDark()
+const closeMenu = () => {
+  isMenuOpen.value = false
 }
 
 onMounted(() => {
@@ -77,78 +71,27 @@ const handleScroll = () => {
           </NuxtLink>
         </div>
 
-        <!-- Desktop Actions -->
-        <div class="hidden md:flex items-center gap-3">
-          <!-- Theme Toggle -->
-          <ClientOnly>
-            <button
-              @click="toggleDark"
-              class="p-2 rounded-full hover:bg-muted/50 transition-colors"
-              aria-label="Toggle theme"
-            >
-              <Sun v-if="themeStore.isDark" class="h-5 w-5" />
-              <Moon v-else class="h-5 w-5" />
+        <!-- Desktop Actions - Client Only Component -->
+        <div class="hidden md:block">
+          <LayoutNavbarActions />
+          <!-- SSR Fallback -->
+          <div class="hidden-when-client-loaded flex items-center gap-3">
+            <button class="p-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="Toggle theme">
+              <Moon class="h-5 w-5" />
             </button>
-            <template #fallback>
-              <button class="p-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="Toggle theme">
-                <Moon class="h-5 w-5" />
-              </button>
-            </template>
-          </ClientOnly>
-
-          <!-- Wishlist -->
-          <NuxtLink to="/wishlist" class="relative p-2 rounded-full hover:bg-muted/50 transition-colors">
-            <Heart class="h-5 w-5" />
-            <ClientOnly>
-              <span
-                v-if="wishlistStore.totalItems > 0"
-                class="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
-              >
-                {{ wishlistStore.totalItems }}
-              </span>
-            </ClientOnly>
-          </NuxtLink>
-
-          <!-- Cart -->
-          <NuxtLink to="/cart" class="relative p-2 rounded-full hover:bg-muted/50 transition-colors">
-            <ShoppingCart class="h-5 w-5" />
-            <ClientOnly>
-              <span
-                v-if="cartStore.totalItems > 0"
-                class="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
-              >
-                {{ cartStore.totalItems }}
-              </span>
-            </ClientOnly>
-          </NuxtLink>
-
-          <!-- User Menu -->
-          <ClientOnly>
-            <template v-if="authStore.isAuthenticated">
-              <NuxtLink to="/account" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
-                <UiAvatar size="sm">
-                  <UiAvatarImage v-if="authStore.avatarUrl" :src="authStore.avatarUrl" />
-                  <UiAvatarFallback>{{ authStore.displayName.charAt(0).toUpperCase() }}</UiAvatarFallback>
-                </UiAvatar>
-              </NuxtLink>
-            </template>
-            <template v-else>
-              <NuxtLink to="/auth">
-                <UiButton variant="default" size="sm">
-                  <User class="h-4 w-4 mr-2" />
-                  Masuk
-                </UiButton>
-              </NuxtLink>
-            </template>
-            <template #fallback>
-              <NuxtLink to="/auth">
-                <UiButton variant="default" size="sm">
-                  <User class="h-4 w-4 mr-2" />
-                  Masuk
-                </UiButton>
-              </NuxtLink>
-            </template>
-          </ClientOnly>
+            <NuxtLink to="/wishlist" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
+              <Heart class="h-5 w-5" />
+            </NuxtLink>
+            <NuxtLink to="/cart" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
+              <ShoppingCart class="h-5 w-5" />
+            </NuxtLink>
+            <NuxtLink to="/auth">
+              <UiButton variant="default" size="sm">
+                <User class="h-4 w-4 mr-2" />
+                Masuk
+              </UiButton>
+            </NuxtLink>
+          </div>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -177,75 +120,24 @@ const handleScroll = () => {
             :key="item.path"
             :to="item.path"
             class="block px-4 py-2 rounded-lg text-foreground/80 hover:bg-muted/50 hover:text-primary transition-colors"
-            @click="isMenuOpen = false"
+            @click="closeMenu"
           >
             {{ item.name }}
           </NuxtLink>
 
           <UiSeparator />
 
-          <div class="flex items-center justify-between px-4">
-            <div class="flex items-center gap-4">
-              <ClientOnly>
-                <button
-                  @click="toggleDark"
-                  class="p-2 rounded-full hover:bg-muted/50 transition-colors"
-                >
-                  <Sun v-if="themeStore.isDark" class="h-5 w-5" />
-                  <Moon v-else class="h-5 w-5" />
-                </button>
-                <template #fallback>
-                  <button class="p-2 rounded-full hover:bg-muted/50 transition-colors">
-                    <Moon class="h-5 w-5" />
-                  </button>
-                </template>
-              </ClientOnly>
-
-              <NuxtLink to="/wishlist" class="relative p-2 rounded-full hover:bg-muted/50" @click="isMenuOpen = false">
-                <Heart class="h-5 w-5" />
-                <ClientOnly>
-                  <span
-                    v-if="wishlistStore.totalItems > 0"
-                    class="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
-                  >
-                    {{ wishlistStore.totalItems }}
-                  </span>
-                </ClientOnly>
-              </NuxtLink>
-
-              <NuxtLink to="/cart" class="relative p-2 rounded-full hover:bg-muted/50" @click="isMenuOpen = false">
-                <ShoppingCart class="h-5 w-5" />
-                <ClientOnly>
-                  <span
-                    v-if="cartStore.totalItems > 0"
-                    class="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
-                  >
-                    {{ cartStore.totalItems }}
-                  </span>
-                </ClientOnly>
-              </NuxtLink>
-            </div>
-
-            <ClientOnly>
-              <template v-if="authStore.isAuthenticated">
-                <NuxtLink to="/account" @click="isMenuOpen = false">
-                  <UiButton variant="outline" size="sm">Akun</UiButton>
-                </NuxtLink>
-              </template>
-              <template v-else>
-                <NuxtLink to="/auth" @click="isMenuOpen = false">
-                  <UiButton variant="default" size="sm">Masuk</UiButton>
-                </NuxtLink>
-              </template>
-              <template #fallback>
-                <NuxtLink to="/auth" @click="isMenuOpen = false">
-                  <UiButton variant="default" size="sm">Masuk</UiButton>
-                </NuxtLink>
-              </template>
-            </ClientOnly>
-          </div>
+          <!-- Mobile Actions - Client Only Component -->
+          <LayoutNavbarMobileActions @close-menu="closeMenu" />
         </div>
       </Transition>
     </nav>
   </header>
 </template>
+
+<style scoped>
+/* Hide SSR fallback when client component is loaded */
+.hidden-when-client-loaded {
+  display: none;
+}
+</style>

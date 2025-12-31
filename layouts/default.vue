@@ -1,10 +1,10 @@
 <script setup lang="ts">
-// Direct store access - Nuxt handles SSR safety
-const authStore = useAuthStore()
-const themeStore = useThemeStore()
-
+// Initialize stores on client side only
 onMounted(async () => {
   try {
+    const authStore = useAuthStore()
+    const themeStore = useThemeStore()
+    
     await authStore.initialize()
     themeStore.applyTheme()
     
@@ -35,7 +35,10 @@ onMounted(async () => {
     
     <LayoutFooter />
     <LayoutFloatingWhatsApp />
-    <ThemeCustomizer />
+    
+    <!-- Theme Customizer - Client Only -->
+    <ThemeThemeCustomizer />
+    
     <UiToast />
   </div>
 </template>
