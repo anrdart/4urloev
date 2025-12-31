@@ -2,25 +2,9 @@
 import { Settings, X, Palette, Sun, Moon, Sparkles, RotateCcw, Save } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
-// SSR-safe store refs - initialized on mount
-const themeStore = ref<ReturnType<typeof useThemeStore> | null>(null)
-const authStore = ref<ReturnType<typeof useAuthStore> | null>(null)
-const isMounted = ref(false)
-
-// SSR-safe computed values
-const isCustomizerOpen = computed(() => themeStore.value?.isCustomizerOpen ?? false)
-const isDark = computed(() => themeStore.value?.isDark ?? false)
-const primaryColor = computed(() => themeStore.value?.primaryColor ?? '#8B5CF6')
-const secondaryColor = computed(() => themeStore.value?.secondaryColor ?? '#EC4899')
-const accentColor = computed(() => themeStore.value?.accentColor ?? '#F59E0B')
-const glassmorphismIntensity = computed(() => themeStore.value?.glassmorphismIntensity ?? 0.7)
-const user = computed(() => authStore.value?.user ?? null)
-
-onMounted(() => {
-  themeStore.value = useThemeStore()
-  authStore.value = useAuthStore()
-  isMounted.value = true
-})
+// Direct store access
+const themeStore = useThemeStore()
+const authStore = useAuthStore()
 
 const colorPresets = [
   { name: 'Purple', primary: '#8B5CF6', secondary: '#EC4899', accent: '#F59E0B' },
@@ -31,7 +15,7 @@ const colorPresets = [
 ]
 
 const handlePresetClick = (preset: typeof colorPresets[0]) => {
-  themeStore.value?.setTheme({
+  themeStore.setTheme({
     primaryColor: preset.primary,
     secondaryColor: preset.secondary,
     accentColor: preset.accent,
@@ -40,13 +24,13 @@ const handlePresetClick = (preset: typeof colorPresets[0]) => {
 }
 
 const handleSave = async () => {
-  if (!user.value) {
+  if (!authStore.user) {
     toast.error('Silakan login untuk menyimpan tema')
     return
   }
   
   try {
-    await themeStore.value?.saveThemeToSupabase(user.value.id)
+    await themeStore.saveThemeToSupabase(authStore.user.id)
     toast.success('Tema berhasil disimpan')
   } catch {
     toast.error('Gagal menyimpan tema')
@@ -54,20 +38,20 @@ const handleSave = async () => {
 }
 
 const handleReset = () => {
-  themeStore.value?.resetTheme()
+  themeStore.resetTheme()
   toast.success('Tema direset ke default')
 }
 
 const toggleCustomizer = () => {
-  themeStore.value?.toggleCustomizer()
+  themeStore.toggleCustomizer()
 }
 
 const toggleDark = () => {
-  themeStore.value?.toggleDark()
+  themeStore.toggleDark()
 }
 
 const setTheme = (theme: Record<string, unknown>) => {
-  themeStore.value?.setTheme(theme)
+  themeStore.setTheme(theme)
 }
 </script>
 
@@ -75,7 +59,7 @@ const setTheme = (theme: Record<string, unknown>) => {
   <ClientOnly>
     <!-- Toggle Button -->
     <button
-      v-if="isMounted && !isCustomizerOpen"
+      v-if="!themeStore.isCustomizerOpen"
       @click="toggleCustomizer"
       class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg hover:shadow-xl hover:scale-110 transition-all"
       aria-label="Open theme customizer"
@@ -93,7 +77,7 @@ const setTheme = (theme: Record<string, unknown>) => {
       leave-to-class="translate-x-full opacity-0"
     >
       <div
-        v-if="isMounted && isCustomizerOpen"
+        v-if="themeStore.isCustomizerOpen"
         class="fixed right-0 top-0 bottom-0 w-80 z-50 glass-card-lg border-l shadow-2xl overflow-y-auto"
       >
         <!-- Header -->
@@ -115,7 +99,7 @@ const setTheme = (theme: Record<string, unknown>) => {
           <div class="glass-card-sm rounded-xl p-4">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <Sun v-if="!isDark" class="h-5 w-5 text-yellow-500" />
+                <Sun v-if="!themeStore.isDark" class="h-5 w-5 text-yellow-500" />
                 <Moon v-else class="h-5 w-5 text-blue-500" />
                 <span class="font-medium">Mode Gelap</span>
               </div>
@@ -123,13 +107,13 @@ const setTheme = (theme: Record<string, unknown>) => {
                 @click="toggleDark"
                 :class="[
                   'relative inline-flex h-6 w-11 items-center rounded-full transition-colors',
-                  isDark ? 'bg-primary' : 'bg-muted'
+                  themeStore.isDark ? 'bg-primary' : 'bg-muted'
                 ]"
               >
                 <span
                   :class="[
                     'inline-block h-4 w-4 transform rounded-full bg-white transition-transform',
-                    isDark ? 'translate-x-6' : 'translate-x-1'
+                    themeStore.isDark ? 'translate-x-6' : 'translate-x-1'
                   ]"
                 />
               </button>
@@ -171,7 +155,7 @@ const setTheme = (theme: Record<string, unknown>) => {
                 <span class="text-sm">Primary</span>
                 <input
                   type="color"
-                  :value="primaryColor"
+                  :value="themeStore.primaryColor"
                   @input="setTheme({ primaryColor: ($event.target as HTMLInputElement).value })"
                   class="w-10 h-10 rounded-lg border border-input cursor-pointer"
                 />
@@ -180,7 +164,7 @@ const setTheme = (theme: Record<string, unknown>) => {
                 <span class="text-sm">Secondary</span>
                 <input
                   type="color"
-                  :value="secondaryColor"
+                  :value="themeStore.secondaryColor"
                   @input="setTheme({ secondaryColor: ($event.target as HTMLInputElement).value })"
                   class="w-10 h-10 rounded-lg border border-input cursor-pointer"
                 />
@@ -189,7 +173,7 @@ const setTheme = (theme: Record<string, unknown>) => {
                 <span class="text-sm">Accent</span>
                 <input
                   type="color"
-                  :value="accentColor"
+                  :value="themeStore.accentColor"
                   @input="setTheme({ accentColor: ($event.target as HTMLInputElement).value })"
                   class="w-10 h-10 rounded-lg border border-input cursor-pointer"
                 />
@@ -205,7 +189,7 @@ const setTheme = (theme: Record<string, unknown>) => {
               min="0"
               max="1"
               step="0.1"
-              :value="glassmorphismIntensity"
+              :value="themeStore.glassmorphismIntensity"
               @input="setTheme({ glassmorphismIntensity: parseFloat(($event.target as HTMLInputElement).value) })"
               class="w-full accent-primary"
             />
@@ -213,7 +197,7 @@ const setTheme = (theme: Record<string, unknown>) => {
 
           <!-- Actions -->
           <div class="space-y-2 pt-4 border-t border-border/50">
-            <UiButton @click="handleSave" class="w-full" :disabled="!user">
+            <UiButton @click="handleSave" class="w-full" :disabled="!authStore.user">
               <Save class="h-4 w-4" />
               Simpan Tema
             </UiButton>
@@ -226,16 +210,11 @@ const setTheme = (theme: Record<string, unknown>) => {
       </div>
     </Transition>
     
-    <!-- Fallback for SSR -->
+    <!-- Fallback for SSR - static button that will be replaced -->
     <template #fallback>
-      <button
-        class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg hover:shadow-xl hover:scale-110 transition-all"
-        aria-label="Open theme customizer"
-      >
+      <div class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg">
         <Settings class="h-5 w-5 text-primary animate-spin" style="animation-duration: 10s" />
-      </button>
+      </div>
     </template>
   </ClientOnly>
 </template>
-
-

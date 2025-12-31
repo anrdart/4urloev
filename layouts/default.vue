@@ -1,20 +1,16 @@
 <script setup lang="ts">
-// SSR-safe store refs - initialized on client only
-const authStore = ref<ReturnType<typeof useAuthStore> | null>(null)
-const themeStore = ref<ReturnType<typeof useThemeStore> | null>(null)
+// Direct store access - Nuxt handles SSR safety
+const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
 onMounted(async () => {
   try {
-    // Initialize stores on client only
-    authStore.value = useAuthStore()
-    themeStore.value = useThemeStore()
-    
-    await authStore.value.initialize()
-    themeStore.value.applyTheme()
+    await authStore.initialize()
+    themeStore.applyTheme()
     
     // Load user theme if authenticated
-    if (authStore.value.user) {
-      await themeStore.value.loadThemeFromSupabase(authStore.value.user.id)
+    if (authStore.user) {
+      await themeStore.loadThemeFromSupabase(authStore.user.id)
     }
   } catch (error) {
     console.error('Layout initialization error:', error)
@@ -43,4 +39,3 @@ onMounted(async () => {
     <UiToast />
   </div>
 </template>
-
