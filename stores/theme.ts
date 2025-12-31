@@ -191,10 +191,6 @@ export const useThemeStore = defineStore('theme', () => {
     loadThemeFromSupabase,
     saveThemeToSupabase,
   }
-}, {
-  persist: {
-    pick: ['primaryColor', 'secondaryColor', 'accentColor', 'backgroundGradient', 'glassmorphismIntensity', 'isDark'],
-  },
 })
 
 // Helper function to convert hex to HSL

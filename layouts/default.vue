@@ -1,15 +1,20 @@
 <script setup lang="ts">
-const authStore = useAuthStore()
-const themeStore = useThemeStore()
+// SSR-safe store refs - initialized on client only
+const authStore = ref<ReturnType<typeof useAuthStore> | null>(null)
+const themeStore = ref<ReturnType<typeof useThemeStore> | null>(null)
 
 onMounted(async () => {
   try {
-    await authStore.initialize()
-    themeStore.applyTheme()
+    // Initialize stores on client only
+    authStore.value = useAuthStore()
+    themeStore.value = useThemeStore()
+    
+    await authStore.value.initialize()
+    themeStore.value.applyTheme()
     
     // Load user theme if authenticated
-    if (authStore.user) {
-      await themeStore.loadThemeFromSupabase(authStore.user.id)
+    if (authStore.value.user) {
+      await themeStore.value.loadThemeFromSupabase(authStore.value.user.id)
     }
   } catch (error) {
     console.error('Layout initialization error:', error)

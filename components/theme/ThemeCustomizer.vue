@@ -2,18 +2,25 @@
 import { Settings, X, Palette, Sun, Moon, Sparkles, RotateCcw, Save } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
-// SSR-safe store initialization
-const themeStore = import.meta.client ? useThemeStore() : null
-const authStore = import.meta.client ? useAuthStore() : null
+// SSR-safe store refs - initialized on mount
+const themeStore = ref<ReturnType<typeof useThemeStore> | null>(null)
+const authStore = ref<ReturnType<typeof useAuthStore> | null>(null)
+const isMounted = ref(false)
 
 // SSR-safe computed values
-const isCustomizerOpen = computed(() => themeStore?.isCustomizerOpen ?? false)
-const isDark = computed(() => themeStore?.isDark ?? false)
-const primaryColor = computed(() => themeStore?.primaryColor ?? '#8B5CF6')
-const secondaryColor = computed(() => themeStore?.secondaryColor ?? '#EC4899')
-const accentColor = computed(() => themeStore?.accentColor ?? '#F59E0B')
-const glassmorphismIntensity = computed(() => themeStore?.glassmorphismIntensity ?? 0.7)
-const user = computed(() => authStore?.user ?? null)
+const isCustomizerOpen = computed(() => themeStore.value?.isCustomizerOpen ?? false)
+const isDark = computed(() => themeStore.value?.isDark ?? false)
+const primaryColor = computed(() => themeStore.value?.primaryColor ?? '#8B5CF6')
+const secondaryColor = computed(() => themeStore.value?.secondaryColor ?? '#EC4899')
+const accentColor = computed(() => themeStore.value?.accentColor ?? '#F59E0B')
+const glassmorphismIntensity = computed(() => themeStore.value?.glassmorphismIntensity ?? 0.7)
+const user = computed(() => authStore.value?.user ?? null)
+
+onMounted(() => {
+  themeStore.value = useThemeStore()
+  authStore.value = useAuthStore()
+  isMounted.value = true
+})
 
 const colorPresets = [
   { name: 'Purple', primary: '#8B5CF6', secondary: '#EC4899', accent: '#F59E0B' },
@@ -24,7 +31,7 @@ const colorPresets = [
 ]
 
 const handlePresetClick = (preset: typeof colorPresets[0]) => {
-  themeStore?.setTheme({
+  themeStore.value?.setTheme({
     primaryColor: preset.primary,
     secondaryColor: preset.secondary,
     accentColor: preset.accent,
@@ -39,7 +46,7 @@ const handleSave = async () => {
   }
   
   try {
-    await themeStore?.saveThemeToSupabase(user.value.id)
+    await themeStore.value?.saveThemeToSupabase(user.value.id)
     toast.success('Tema berhasil disimpan')
   } catch {
     toast.error('Gagal menyimpan tema')
@@ -47,20 +54,20 @@ const handleSave = async () => {
 }
 
 const handleReset = () => {
-  themeStore?.resetTheme()
+  themeStore.value?.resetTheme()
   toast.success('Tema direset ke default')
 }
 
 const toggleCustomizer = () => {
-  themeStore?.toggleCustomizer()
+  themeStore.value?.toggleCustomizer()
 }
 
 const toggleDark = () => {
-  themeStore?.toggleDark()
+  themeStore.value?.toggleDark()
 }
 
 const setTheme = (theme: Record<string, unknown>) => {
-  themeStore?.setTheme(theme)
+  themeStore.value?.setTheme(theme)
 }
 </script>
 
@@ -68,7 +75,7 @@ const setTheme = (theme: Record<string, unknown>) => {
   <ClientOnly>
     <!-- Toggle Button -->
     <button
-      v-if="!isCustomizerOpen"
+      v-if="isMounted && !isCustomizerOpen"
       @click="toggleCustomizer"
       class="fixed bottom-24 right-6 z-40 p-3 rounded-full glass-card shadow-lg hover:shadow-xl hover:scale-110 transition-all"
       aria-label="Open theme customizer"
@@ -86,7 +93,7 @@ const setTheme = (theme: Record<string, unknown>) => {
       leave-to-class="translate-x-full opacity-0"
     >
       <div
-        v-if="isCustomizerOpen"
+        v-if="isMounted && isCustomizerOpen"
         class="fixed right-0 top-0 bottom-0 w-80 z-50 glass-card-lg border-l shadow-2xl overflow-y-auto"
       >
         <!-- Header -->

@@ -3,20 +3,21 @@ import { Menu, X, ShoppingCart, Heart, User, Sun, Moon, Sparkles } from 'lucide-
 
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
+const isMounted = ref(false)
 
-// Initialize stores only on client to avoid SSR issues
-const authStore = useAuthStore()
-const cartStore = useCartStore()
-const wishlistStore = useWishlistStore()
-const themeStore = useThemeStore()
+// Store refs - will be populated on mount
+const authStore = ref<ReturnType<typeof useAuthStore> | null>(null)
+const cartStore = ref<ReturnType<typeof useCartStore> | null>(null)
+const wishlistStore = ref<ReturnType<typeof useWishlistStore> | null>(null)
+const themeStore = ref<ReturnType<typeof useThemeStore> | null>(null)
 
 // SSR-safe computed values
-const isDark = computed(() => themeStore?.isDark ?? false)
-const totalCartItems = computed(() => cartStore?.totalItems ?? 0)
-const totalWishlistItems = computed(() => wishlistStore?.totalItems ?? 0)
-const isAuthenticated = computed(() => authStore?.isAuthenticated ?? false)
-const avatarUrl = computed(() => authStore?.avatarUrl ?? null)
-const displayName = computed(() => authStore?.displayName ?? 'User')
+const isDark = computed(() => themeStore.value?.isDark ?? false)
+const totalCartItems = computed(() => cartStore.value?.totalItems ?? 0)
+const totalWishlistItems = computed(() => wishlistStore.value?.totalItems ?? 0)
+const isAuthenticated = computed(() => authStore.value?.isAuthenticated ?? false)
+const avatarUrl = computed(() => authStore.value?.avatarUrl ?? null)
+const displayName = computed(() => authStore.value?.displayName ?? 'User')
 
 const navItems = [
   { name: 'Produk', path: '/products' },
@@ -30,7 +31,18 @@ const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
 }
 
+const toggleDark = () => {
+  themeStore.value?.toggleDark()
+}
+
 onMounted(() => {
+  // Initialize stores on client only
+  authStore.value = useAuthStore()
+  cartStore.value = useCartStore()
+  wishlistStore.value = useWishlistStore()
+  themeStore.value = useThemeStore()
+  isMounted.value = true
+  
   window.addEventListener('scroll', handleScroll)
 })
 
@@ -79,75 +91,54 @@ const handleScroll = () => {
         <!-- Desktop Actions -->
         <div class="hidden md:flex items-center gap-3">
           <!-- Theme Toggle -->
-          <ClientOnly>
-            <button
-              @click="themeStore.toggleDark"
-              class="p-2 rounded-full hover:bg-muted/50 transition-colors"
-              aria-label="Toggle theme"
-            >
-              <Sun v-if="isDark" class="h-5 w-5" />
-              <Moon v-else class="h-5 w-5" />
-            </button>
-            <template #fallback>
-              <button class="p-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="Toggle theme">
-                <Moon class="h-5 w-5" />
-              </button>
-            </template>
-          </ClientOnly>
+          <button
+            @click="toggleDark"
+            class="p-2 rounded-full hover:bg-muted/50 transition-colors"
+            aria-label="Toggle theme"
+          >
+            <Sun v-if="isDark" class="h-5 w-5" />
+            <Moon v-else class="h-5 w-5" />
+          </button>
 
           <!-- Wishlist -->
           <NuxtLink to="/wishlist" class="relative p-2 rounded-full hover:bg-muted/50 transition-colors">
             <Heart class="h-5 w-5" />
-            <ClientOnly>
-              <span
-                v-if="totalWishlistItems > 0"
-                class="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
-              >
-                {{ totalWishlistItems }}
-              </span>
-            </ClientOnly>
+            <span
+              v-if="isMounted && totalWishlistItems > 0"
+              class="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
+            >
+              {{ totalWishlistItems }}
+            </span>
           </NuxtLink>
 
           <!-- Cart -->
           <NuxtLink to="/cart" class="relative p-2 rounded-full hover:bg-muted/50 transition-colors">
             <ShoppingCart class="h-5 w-5" />
-            <ClientOnly>
-              <span
-                v-if="totalCartItems > 0"
-                class="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
-              >
-                {{ totalCartItems }}
-              </span>
-            </ClientOnly>
+            <span
+              v-if="isMounted && totalCartItems > 0"
+              class="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
+            >
+              {{ totalCartItems }}
+            </span>
           </NuxtLink>
 
           <!-- User Menu -->
-          <ClientOnly>
-            <template v-if="isAuthenticated">
-              <NuxtLink to="/account" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
-                <UiAvatar size="sm">
-                  <UiAvatarImage v-if="avatarUrl" :src="avatarUrl" />
-                  <UiAvatarFallback>{{ displayName.charAt(0).toUpperCase() }}</UiAvatarFallback>
-                </UiAvatar>
-              </NuxtLink>
-            </template>
-            <template v-else>
-              <NuxtLink to="/auth">
-                <UiButton variant="default" size="sm">
-                  <User class="h-4 w-4 mr-2" />
-                  Masuk
-                </UiButton>
-              </NuxtLink>
-            </template>
-            <template #fallback>
-              <NuxtLink to="/auth">
-                <UiButton variant="default" size="sm">
-                  <User class="h-4 w-4 mr-2" />
-                  Masuk
-                </UiButton>
-              </NuxtLink>
-            </template>
-          </ClientOnly>
+          <template v-if="isMounted && isAuthenticated">
+            <NuxtLink to="/account" class="p-2 rounded-full hover:bg-muted/50 transition-colors">
+              <UiAvatar size="sm">
+                <UiAvatarImage v-if="avatarUrl" :src="avatarUrl" />
+                <UiAvatarFallback>{{ displayName.charAt(0).toUpperCase() }}</UiAvatarFallback>
+              </UiAvatar>
+            </NuxtLink>
+          </template>
+          <template v-else>
+            <NuxtLink to="/auth">
+              <UiButton variant="default" size="sm">
+                <User class="h-4 w-4 mr-2" />
+                Masuk
+              </UiButton>
+            </NuxtLink>
+          </template>
         </div>
 
         <!-- Mobile Menu Button -->
@@ -186,7 +177,7 @@ const handleScroll = () => {
           <div class="flex items-center justify-between px-4">
             <div class="flex items-center gap-4">
               <button
-                @click="themeStore.toggleDark"
+                @click="toggleDark"
                 class="p-2 rounded-full hover:bg-muted/50 transition-colors"
               >
                 <Sun v-if="isDark" class="h-5 w-5" />
@@ -196,7 +187,7 @@ const handleScroll = () => {
               <NuxtLink to="/wishlist" class="relative p-2 rounded-full hover:bg-muted/50" @click="isMenuOpen = false">
                 <Heart class="h-5 w-5" />
                 <span
-                  v-if="totalWishlistItems > 0"
+                  v-if="isMounted && totalWishlistItems > 0"
                   class="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
                 >
                   {{ totalWishlistItems }}
@@ -206,7 +197,7 @@ const handleScroll = () => {
               <NuxtLink to="/cart" class="relative p-2 rounded-full hover:bg-muted/50" @click="isMenuOpen = false">
                 <ShoppingCart class="h-5 w-5" />
                 <span
-                  v-if="totalCartItems > 0"
+                  v-if="isMounted && totalCartItems > 0"
                   class="absolute -top-1 -right-1 bg-secondary text-secondary-foreground text-xs w-5 h-5 rounded-full flex items-center justify-center"
                 >
                   {{ totalCartItems }}
@@ -214,7 +205,7 @@ const handleScroll = () => {
               </NuxtLink>
             </div>
 
-            <template v-if="isAuthenticated">
+            <template v-if="isMounted && isAuthenticated">
               <NuxtLink to="/account" @click="isMenuOpen = false">
                 <UiButton variant="outline" size="sm">Akun</UiButton>
               </NuxtLink>
@@ -230,5 +221,3 @@ const handleScroll = () => {
     </nav>
   </header>
 </template>
-
-
