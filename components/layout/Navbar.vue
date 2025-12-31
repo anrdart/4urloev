@@ -88,6 +88,11 @@ const handleScroll = () => {
               <Sun v-if="isDark" class="h-5 w-5" />
               <Moon v-else class="h-5 w-5" />
             </button>
+            <template #fallback>
+              <button class="p-2 rounded-full hover:bg-muted/50 transition-colors" aria-label="Toggle theme">
+                <Moon class="h-5 w-5" />
+              </button>
+            </template>
           </ClientOnly>
 
           <!-- Wishlist -->
@@ -126,9 +131,15 @@ const handleScroll = () => {
                 </UiAvatar>
               </NuxtLink>
             </template>
-          </ClientOnly>
-          <ClientOnly>
-            <template v-if="!isAuthenticated">
+            <template v-else>
+              <NuxtLink to="/auth">
+                <UiButton variant="default" size="sm">
+                  <User class="h-4 w-4 mr-2" />
+                  Masuk
+                </UiButton>
+              </NuxtLink>
+            </template>
+            <template #fallback>
               <NuxtLink to="/auth">
                 <UiButton variant="default" size="sm">
                   <User class="h-4 w-4 mr-2" />
