@@ -255,7 +255,8 @@ export default defineNuxtConfig({
   },
 
   nitro: {
-    preset: 'cloudflare-pages',
+    // preset: 'cloudflare-pages', // Removed to default to auto-detect or node-server
+
     // Compression for better performance
     compressPublicAssets: true,
     // Route-level caching configuration
@@ -344,47 +345,6 @@ export default defineNuxtConfig({
   // Vite optimization for code splitting and bundle optimization
   vite: {
     build: {
-      // Enable chunk splitting for better caching
-      rollupOptions: {
-        output: {
-          // Manual chunk splitting strategy
-          manualChunks: (id: string) => {
-            // Vendor chunks - split large dependencies
-            if (id.includes('node_modules')) {
-              // Three.js and TresJS - large 3D libraries
-              if (id.includes('three') || id.includes('@tresjs')) {
-                return 'vendor-three'
-              }
-              // Fabric.js - canvas library for customization
-              if (id.includes('fabric')) {
-                return 'vendor-fabric'
-              }
-              // Vue ecosystem
-              if (id.includes('vue') || id.includes('pinia') || id.includes('@vueuse')) {
-                return 'vendor-vue'
-              }
-              // UI components
-              if (id.includes('radix-vue') || id.includes('lucide')) {
-                return 'vendor-ui'
-              }
-              // Supabase client
-              if (id.includes('@supabase')) {
-                return 'vendor-supabase'
-              }
-              // Stripe
-              if (id.includes('stripe')) {
-                return 'vendor-stripe'
-              }
-              // Other node_modules
-              return 'vendor-common'
-            }
-          },
-          // Optimize chunk file names for caching
-          chunkFileNames: 'assets/js/[name]-[hash].js',
-          entryFileNames: 'assets/js/[name]-[hash].js',
-          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
-        },
-      },
       // Increase chunk size warning limit for large libraries
       chunkSizeWarningLimit: 1000,
       // Enable minification
