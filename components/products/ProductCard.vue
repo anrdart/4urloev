@@ -10,31 +10,32 @@ const props = withDefaults(defineProps<{
   priority: false,
 })
 
-// SSR-safe store access
-const cartStore = import.meta.client ? useCartStore() : null
-const wishlistStore = import.meta.client ? useWishlistStore() : null
+// Always initialize stores directly - Pinia handles SSR safely
+const cartStore = useCartStore()
+const wishlistStore = useWishlistStore()
 
-// Track if component is mounted (client-side)
+// Track if component is mounted (client-side) for persisted state display
 const isMounted = ref(false)
 onMounted(() => {
   isMounted.value = true
 })
 
-// SSR-safe computed - always return false on server to prevent hydration mismatch
-const isInWishlist = computed(() => isMounted.value && wishlistStore?.hasItem(props.product.id))
-const isInCart = computed(() => isMounted.value && cartStore?.hasItem(props.product.id))
+// SSR-safe computed - show false on server to prevent hydration mismatch
+const isInWishlist = computed(() => isMounted.value && wishlistStore.hasItem(props.product.id))
+const isInCart = computed(() => isMounted.value && cartStore.hasItem(props.product.id))
 
 const primaryImage = computed(() => {
   const primary = props.product.product_images?.find(img => img.is_primary)
   return primary?.url || props.product.product_images?.[0]?.url || '/placeholder.svg'
 })
 
+// Direct store actions - no optional chaining needed
 const handleAddToCart = () => {
-  cartStore?.addItem(props.product, 1)
+  cartStore.addItem(props.product, 1)
 }
 
 const handleToggleWishlist = () => {
-  wishlistStore?.toggleItem(props.product)
+  wishlistStore.toggleItem(props.product)
 }
 </script>
 

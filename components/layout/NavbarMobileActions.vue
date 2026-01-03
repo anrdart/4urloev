@@ -5,16 +5,20 @@ const emit = defineEmits<{
   closeMenu: []
 }>()
 
-const isMounted = ref(false)
+// Always initialize stores directly - Pinia handles SSR safely
 const authStore = useAuthStore()
 const cartStore = useCartStore()
 const wishlistStore = useWishlistStore()
 const themeStore = useThemeStore()
 
+// Use isMounted pattern only for UI display that depends on persisted state
+const isMounted = ref(false)
+
 onMounted(() => {
   isMounted.value = true
 })
 
+// Direct store action - no optional chaining needed
 const toggleDark = () => {
   themeStore.toggleDark()
 }

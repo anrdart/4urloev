@@ -39,14 +39,16 @@ interface Props extends PrimitiveProps {
   variant?: ButtonVariants['variant']
   size?: ButtonVariants['size']
   class?: HTMLAttributes['class']
+  type?: 'button' | 'submit' | 'reset'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   as: 'button',
+  type: 'button',
 })
 
 const delegatedProps = computed(() => {
-  const { class: _, variant: __, size: ___, ...delegated } = props
+  const { class: _, variant: __, size: ___, type: ____, ...delegated } = props
   return delegated
 })
 </script>
@@ -54,6 +56,7 @@ const delegatedProps = computed(() => {
 <template>
   <Primitive
     v-bind="delegatedProps"
+    :type="props.as === 'button' ? props.type : undefined"
     :class="cn(buttonVariants({ variant, size }), props.class)"
   >
     <slot />

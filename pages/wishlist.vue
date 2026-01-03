@@ -2,23 +2,30 @@
 import { Heart, ShoppingCart, Trash2, ShoppingBag } from 'lucide-vue-next'
 import { formatPrice } from '~/lib/utils'
 
-// SSR-safe store access
-const wishlistStore = import.meta.client ? useWishlistStore() : null
+// Always initialize store directly - Pinia handles SSR safely
+const wishlistStore = useWishlistStore()
 
-// SSR-safe computed values
-const items = computed(() => wishlistStore?.items ?? [])
-const isEmpty = computed(() => wishlistStore?.isEmpty ?? true)
+// Use isMounted pattern for UI display that depends on persisted state
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
 
+// SSR-safe computed values - show empty/default on server
+const items = computed(() => isMounted.value ? wishlistStore.items : [])
+const isEmpty = computed(() => isMounted.value ? wishlistStore.isEmpty : true)
+
+// Direct store actions - no optional chaining needed
 const handleMoveToCart = (productId: string) => {
-  wishlistStore?.moveToCart(productId)
+  wishlistStore.moveToCart(productId)
 }
 
 const handleRemoveItem = (productId: string) => {
-  wishlistStore?.removeItem(productId)
+  wishlistStore.removeItem(productId)
 }
 
 const handleMoveAllToCart = () => {
-  wishlistStore?.moveAllToCart()
+  wishlistStore.moveAllToCart()
 }
 
 useSeoMeta({

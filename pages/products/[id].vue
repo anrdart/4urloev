@@ -12,6 +12,12 @@ const quantity = ref(1)
 const selectedImageIndex = ref(0)
 const isAddedToCart = ref(false)
 
+// Use isMounted pattern for persisted state display
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
+
 // Fetch product
 const { data: product, pending, error } = await useAsyncData(
   `product-${productId}`,
@@ -25,7 +31,8 @@ if (error.value || !product.value) {
   })
 }
 
-const isInWishlist = computed(() => wishlistStore.hasItem(productId))
+// SSR-safe computed - show false on server to prevent hydration mismatch
+const isInWishlist = computed(() => isMounted.value && wishlistStore.hasItem(productId))
 const images = computed(() => product.value?.product_images || [])
 const currentImage = computed(() => images.value[selectedImageIndex.value]?.url || '/placeholder.svg')
 

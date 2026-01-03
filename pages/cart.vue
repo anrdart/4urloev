@@ -2,31 +2,38 @@
 import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'lucide-vue-next'
 import { formatPrice } from '~/lib/utils'
 
-// SSR-safe store access
-const cartStore = import.meta.client ? useCartStore() : null
+// Always initialize store directly - Pinia handles SSR safely
+const cartStore = useCartStore()
 
-// SSR-safe computed values
-const items = computed(() => cartStore?.items ?? [])
-const isEmpty = computed(() => cartStore?.isEmpty ?? true)
-const totalItems = computed(() => cartStore?.totalItems ?? 0)
-const totalPrice = computed(() => cartStore?.totalPrice ?? 0)
+// Use isMounted pattern for UI display that depends on persisted state
+const isMounted = ref(false)
+onMounted(() => {
+  isMounted.value = true
+})
 
+// SSR-safe computed values - show empty/default on server
+const items = computed(() => isMounted.value ? cartStore.items : [])
+const isEmpty = computed(() => isMounted.value ? cartStore.isEmpty : true)
+const totalItems = computed(() => isMounted.value ? cartStore.totalItems : 0)
+const totalPrice = computed(() => isMounted.value ? cartStore.totalPrice : 0)
+
+// Direct store actions - no optional chaining needed
 const handleUpdateQuantity = (productId: string, delta: number) => {
-  const item = items.value.find(i => i.product.id === productId)
+  const item = cartStore.items.find(i => i.product.id === productId)
   if (item) {
     const newQuantity = item.quantity + delta
     if (newQuantity > 0) {
-      cartStore?.updateQuantity(productId, newQuantity)
+      cartStore.updateQuantity(productId, newQuantity)
     }
   }
 }
 
 const handleRemoveItem = (productId: string) => {
-  cartStore?.removeItem(productId)
+  cartStore.removeItem(productId)
 }
 
 const handleClearCart = () => {
-  cartStore?.clearCart()
+  cartStore.clearCart()
 }
 
 useSeoMeta({
